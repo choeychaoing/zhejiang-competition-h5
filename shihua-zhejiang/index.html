@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>诗话浙江 · 寻诗之旅</title>
+<style>
+:root{
+  --brand:#1a5f56;--brand-l:#2c7a6e;--accent:#b35c48;--gold:#c9a227;
+  --paper:#f6f2ea;--card:#ffffff;--ink:#2b2622;--ink2:#6b6257;
+  --line:rgba(26,95,86,.14);--shadow:0 14px 34px rgba(26,95,86,.16);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;background:#dcd6ca;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);overflow:hidden}
+.serif{font-family:"Songti SC",STSong,"SimSun",serif}
+.desktop{display:grid;place-items:center;min-height:100%;padding:18px}
+.phone{position:relative;width:100%;max-width:402px;height:min(860px,94vh);background:#111a18;border-radius:48px;padding:13px;box-shadow:0 30px 70px rgba(0,0,0,.4)}
+.screen{position:relative;width:100%;height:100%;background:var(--paper);border-radius:36px;overflow:hidden;display:flex;flex-direction:column}
+@media (max-width:480px){.desktop{padding:0}.phone{max-width:none;height:100vh;border-radius:0;padding:0;box-shadow:none}.screen{border-radius:0}}
+
+/* ── 状态栏 ── */
+.statusbar{flex:none;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px;font-weight:700;color:var(--ink);position:relative;z-index:5;background:transparent;transition:color .3s}
+.statusbar.on-dark{color:#fff}
+.statusbar svg{display:block}
+
+/* ── 页面系统 ── */
+.pages{position:relative;flex:1;overflow:hidden}
+.page{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);visibility:hidden;transform:translateX(100%);transition:transform .46s cubic-bezier(.22,.9,.32,1),visibility .46s;z-index:1}
+.page.active{visibility:visible;transform:translateX(0);z-index:2}
+.page.stay-left{transform:translateX(-22%) scale(.97)!important}
+.page.go-right{transform:translateX(100%)!important}
+.page.scroll{overflow-y:auto;overscroll-behavior:contain}
+.page-head{flex:none;display:flex;align-items:center;gap:12px;padding:8px 16px 12px}
+.icon-btn{width:36px;height:36px;border-radius:12px;border:none;background:rgba(26,95,86,.08);color:var(--brand);font-size:17px;cursor:pointer;display:grid;place-items:center;transition:transform .15s}
+.icon-btn:active{transform:scale(.9)}
+.page-head h1{font-size:18px;font-weight:800}
+.page-head .sub{font-size:11px;color:var(--ink2);font-weight:500}
+
+/* ── 首页 ── */
+.hero{position:relative;flex:none;height:46%;border-radius:0 0 30px 30px;overflow:hidden;background:#0d2b27}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 30%;animation:kenburns 18s ease-in-out infinite alternate}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.09)}}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.22),transparent 30%,transparent 55%,rgba(13,32,29,.86))}
+.hero .hero-txt{position:absolute;left:22px;right:22px;bottom:18px;color:#fff}
+.hero .kicker{display:inline-block;padding:4px 11px;border:1px solid rgba(255,255,255,.5);border-radius:999px;font-size:11px;letter-spacing:.22em;margin-bottom:10px;backdrop-filter:blur(3px)}
+.hero h2{font-size:32px;letter-spacing:.12em;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.hero p{margin-top:6px;font-size:12.5px;opacity:.85;letter-spacing:.05em}
+.hero .zoom-hint{position:absolute;top:12px;right:14px;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;font-size:11px;backdrop-filter:blur(4px);cursor:pointer}
+.home-body{flex:1;overflow-y:auto;padding:18px 18px 26px}
+.journey-progress{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(120deg,#fff,#f4efe4);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.jp-ring{position:relative;width:52px;height:52px;flex:none}
+.jp-ring svg{transform:rotate(-90deg)}
+.jp-ring .num{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--brand)}
+.journey-progress .t{font-size:13px;font-weight:800}
+.journey-progress .d{font-size:11.5px;color:var(--ink2);margin-top:3px}
+.entries{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.entry{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .18s}
+.entry:active{transform:scale(.975)}
+.entry .ic{width:48px;height:48px;flex:none;border-radius:15px;display:grid;place-items:center;font-size:23px;color:#fff}
+.entry .tx{flex:1;min-width:0}
+.entry .tx b{display:block;font-size:15px}
+.entry .tx span{display:block;font-size:11.5px;color:var(--ink2);margin-top:3px}
+.entry .chev{color:#c8bfae;font-size:18px;flex:none}
+.entry .badge-dot{position:absolute;margin-left:44px;margin-top:-40px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(179,92,72,.2)}
+.scene-strip{margin-top:20px}
+.scene-strip h3{font-size:13px;color:var(--ink2);margin-bottom:10px;letter-spacing:.1em}
+.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.strip::-webkit-scrollbar{display:none}
+.strip .shot{flex:none;width:126px;height:160px;border-radius:16px;overflow:hidden;scroll-snap-align:start;cursor:pointer;position:relative;box-shadow:var(--shadow)}
+.strip .shot img{width:100%;height:100%;object-fit:cover}
+.strip .shot span{position:absolute;left:0;right:0;bottom:0;padding:16px 8px 7px;font-size:11px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.62))}
+
+/* ── 城市列表 ── */
+.city-hero{margin:2px 16px 4px;height:190px;border-radius:22px;overflow:hidden;position:relative;box-shadow:var(--shadow);cursor:pointer}
+.city-hero img{width:100%;height:100%;object-fit:cover}
+.city-hero span{position:absolute;left:12px;bottom:10px;padding:5px 12px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:#fff;font-size:11px;border-radius:999px}
+.city-list{padding:14px 16px 26px;display:flex;flex-direction:column;gap:11px}
+.city{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:18px;cursor:pointer;transition:transform .18s}
+.city:active{transform:scale(.975)}
+.city .seal-mini{width:44px;height:44px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:19px;font-weight:900;color:#fff;background:linear-gradient(140deg,var(--brand-l),var(--brand))}
+.city.done .seal-mini{background:linear-gradient(140deg,#b35c48,#8f3f2e)}
+.city .tx{flex:1}
+.city .tx b{font-size:15px}
+.city .tx span{display:block;font-size:11.5px;color:var(--ink2);margin-top:3px}
+.city .st{font-size:11px;color:var(--ink2);flex:none}
+.city.done .st{color:var(--accent);font-weight:700}
+.city.locked{opacity:.55}
+
+/* ── 扫描浮层 ── */
+.scan-mask{position:absolute;inset:0;z-index:40;background:rgba(10,26,23,.82);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;color:#fff}
+.scan-mask.show{display:flex}
+.nfc-stage{position:relative;width:170px;height:170px;display:grid;place-items:center}
+.nfc-stage .core{width:74px;height:74px;border-radius:50%;background:#fff;color:var(--brand);display:grid;place-items:center;font-weight:900;font-size:15px;z-index:2;box-shadow:0 0 40px rgba(255,255,255,.5)}
+.nfc-stage i{position:absolute;width:74px;height:74px;border-radius:50%;border:1.5px solid rgba(255,255,255,.65);animation:ripple 1.7s ease-out infinite}
+.nfc-stage i:nth-child(2){animation-delay:.55s}
+.nfc-stage i:nth-child(3){animation-delay:1.1s}
+@keyframes ripple{to{width:210px;height:210px;opacity:0}}
+.scan-mask .scan-t{font-size:15px;letter-spacing:.2em;animation:scanPulse 1.2s infinite}
+@keyframes scanPulse{50%{opacity:.45}}
+.scan-mask .scan-d{font-size:11.5px;opacity:.6}
+
+/* ── 结果面板 ── */
+.result-sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;background:var(--paper);border-radius:26px 26px 0 0;padding:24px 22px 30px;transform:translateY(105%);transition:transform .5s cubic-bezier(.22,.9,.32,1);box-shadow:0 -18px 50px rgba(0,0,0,.35)}
+.result-sheet.show{transform:none}
+.rs-close{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.06);color:var(--ink2);cursor:pointer}
+.rs-city{font-size:11px;letter-spacing:.25em;color:var(--brand);font-weight:700}
+.rs-title{font-size:22px;margin:6px 0 14px}
+.poem-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 16px;text-align:center;position:relative;overflow:hidden}
+.poem-card::before{content:"";position:absolute;inset:6px;border:1px dashed rgba(179,92,72,.35);border-radius:13px;pointer-events:none}
+.poem-card .pt{font-size:12px;color:var(--accent);letter-spacing:.3em;margin-bottom:10px}
+.poem-card p{font-size:17px;line-height:2.15;letter-spacing:.08em}
+.poem-card .au{margin-top:10px;font-size:11.5px;color:var(--ink2)}
+.stamp{position:absolute;right:12px;bottom:12px;width:64px;height:64px;border:2.5px solid var(--accent);border-radius:10px;color:var(--accent);display:grid;place-items:center;font-size:15px;font-weight:900;line-height:1.25;text-align:center;transform:rotate(-10deg);opacity:0}
+.stamp.on{animation:stampIn .5s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes stampIn{0%{transform:scale(2.6) rotate(-30deg);opacity:0}55%{transform:scale(.92) rotate(-10deg);opacity:1}100%{transform:scale(1) rotate(-10deg);opacity:.92}}
+.btn{display:block;width:100%;margin-top:16px;padding:15px;border:none;border-radius:16px;background:linear-gradient(120deg,var(--brand),var(--brand-l));color:#fff;font-size:15.5px;font-weight:800;letter-spacing:.08em;cursor:pointer;box-shadow:0 10px 24px rgba(26,95,86,.35);transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:#fff;color:var(--brand);border:1.5px solid rgba(26,95,86,.3);box-shadow:none}
+
+/* ── 聊天页 ── */
+.chat-head{flex:none;display:flex;align-items:center;gap:12px;padding:10px 16px 12px;border-bottom:1px solid var(--line);background:#fffdf8}
+.chat-head .av{width:42px;height:42px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);flex:none}
+.chat-head .av img{width:100%;height:100%;object-fit:cover}
+.chat-head .nm{flex:1}
+.chat-head .nm b{font-size:15px}
+.chat-head .nm span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--brand);margin-top:2px}
+.chat-head .nm i{width:6px;height:6px;border-radius:50%;background:#3fae7a;animation:scanPulse 1.6s infinite}
+.chat-body{flex:1;overflow-y:auto;padding:18px 16px 8px;display:flex;flex-direction:column;gap:14px;background:linear-gradient(180deg,#f6f2ea,#f1ece0)}
+.msg{max-width:80%;padding:11px 14px;border-radius:18px;font-size:14.5px;line-height:1.75;animation:msgIn .35s cubic-bezier(.2,1.2,.4,1)}
+@keyframes msgIn{from{opacity:0;transform:translateY(12px) scale(.96)}}
+.msg.ai{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.me{align-self:flex-end;background:linear-gradient(120deg,var(--brand),var(--brand-l));color:#fff;border-bottom-right-radius:6px;box-shadow:0 6px 16px rgba(26,95,86,.25)}
+.msg.ai.typing-dots{display:flex;gap:5px;padding:15px 16px}
+.msg.ai.typing-dots b{width:7px;height:7px;border-radius:50%;background:#a89f8d;animation:bnc 1.1s infinite}
+.msg.ai.typing-dots b:nth-child(2){animation-delay:.18s}
+.msg.ai.typing-dots b:nth-child(3){animation-delay:.36s}
+@keyframes bnc{30%{transform:translateY(-6px)}}
+.chips{flex:none;display:flex;gap:9px;padding:10px 14px;overflow-x:auto;background:#fffdf8;border-top:1px solid var(--line)}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:9px 15px;border-radius:999px;border:1.5px solid rgba(26,95,86,.3);background:#fff;color:var(--brand);font-size:13px;cursor:pointer;transition:.2s}
+.chip:active{background:var(--brand);color:#fff}
+.chip:disabled{opacity:.35}
+
+/* ── 诗签生成 ── */
+.poem-modal{position:absolute;inset:0;z-index:45;display:none;place-items:center;background:rgba(13,32,29,.72);backdrop-filter:blur(5px);padding:24px}
+.poem-modal.show{display:grid}
+.pm-card{width:100%;background:var(--paper);border-radius:24px;padding:26px 22px;text-align:center;position:relative;animation:pmIn .5s cubic-bezier(.2,1.3,.4,1)}
+@keyframes pmIn{from{opacity:0;transform:translateY(40px) scale(.9)}}
+.pm-card h3{font-size:13px;letter-spacing:.35em;color:var(--accent)}
+.pm-card .verses{margin:18px 0 6px;font-size:19px;line-height:2.3;letter-spacing:.1em}
+.pm-card .vs-note{font-size:11.5px;color:var(--ink2);margin-bottom:8px}
+
+/* ── 手账页 ── */
+.journal-hero{margin:2px 16px;height:150px;border-radius:20px;overflow:hidden;position:relative;box-shadow:var(--shadow)}
+.journal-hero img{width:100%;height:100%;object-fit:cover}
+.journal-hero span{position:absolute;inset:0;display:grid;place-items:center;background:rgba(13,32,29,.45);color:#fff;font-size:20px;letter-spacing:.3em;font-weight:700}
+.stamp-grid{padding:18px 16px 30px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stamp-cell{aspect-ratio:1/1.06;border-radius:18px;background:#fff;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+.stamp-cell .big{width:62px;height:62px;border-radius:14px;display:grid;place-items:center;font-size:26px;font-weight:900;color:#fff;background:linear-gradient(140deg,var(--brand-l),var(--brand));box-shadow:0 8px 18px rgba(26,95,86,.3)}
+.stamp-cell b{font-size:13px}
+.stamp-cell span{font-size:10.5px;color:var(--ink2);padding:0 10px;text-align:center}
+.stamp-cell.locked{border-style:dashed;background:transparent}
+.stamp-cell.locked .big{background:#e5dfd2;color:#b3a992;box-shadow:none}
+.stamp-cell.locked b{color:#b3a992}
+.stamp-cell .mini-seal{position:absolute;top:10px;right:10px;width:26px;height:26px;border:2px solid var(--accent);border-radius:6px;color:var(--accent);font-size:10px;font-weight:900;display:grid;place-items:center;transform:rotate(-10deg)}
+
+/* ── 完成礼花 ── */
+.confetti{position:absolute;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-14px;width:8px;height:13px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* ── 灯箱 ── */
+.lightbox{position:absolute;inset:0;z-index:70;background:rgba(8,15,13,.94);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.lightbox.show{display:flex}
+.lightbox img{width:92%;max-height:82%;object-fit:contain;border-radius:14px}
+.lightbox button{padding:9px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font-size:13px;cursor:pointer}
+
+/* ── toast ── */
+.toast{position:absolute;left:50%;bottom:88px;transform:translate(-50%,20px);z-index:80;padding:11px 20px;border-radius:999px;background:rgba(26,38,35,.9);color:#fff;font-size:13px;opacity:0;transition:.35s;pointer-events:none;max-width:82%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="desktop"><div class="phone"><div class="screen" id="screen">
+
+<div class="statusbar on-dark" id="sbar"><span>9:41</span><span style="display:flex;align-items:center;gap:5px">◈⁙⁛</span></div>
+
+<div class="pages">
+
+  <!-- ═══ 首页 ═══ -->
+  <section class="page active" id="p-home">
+    <div class="hero">
+      <img src="assets/01.png" alt="诗话浙江主视觉">
+      <div class="veil"></div>
+      <span class="zoom-hint" onclick="lightbox('assets/01.png')">查看整套设计 ⊞</span>
+      <div class="hero-txt serif">
+        <span class="kicker">AI 诗词感应文创套装</span>
+        <h2>寻诗之旅</h2>
+        <p>一城一诗 · 一触即达 · 与苏东坡同游江南</p>
+      </div>
+    </div>
+    <div class="home-body">
+      <div class="journey-progress">
+        <div class="jp-ring">
+          <svg width="52" height="52"><circle cx="26" cy="26" r="22" fill="none" stroke="#e3dccc" stroke-width="5"/><circle id="jpbar" cx="26" cy="26" r="22" fill="none" stroke="#1a5f56" stroke-width="5" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2" style="transition:stroke-dashoffset .8s"/></svg>
+          <span class="num" id="jpnum">0/3</span>
+        </div>
+        <div><div class="t">寻诗进度</div><div class="d" id="jpd">轻触地图感应点，解锁城市诗话</div></div>
+      </div>
+      <div class="entries">
+        <div class="entry" onclick="go('p-map')">
+          <div class="ic" style="background:linear-gradient(140deg,#2c7a6e,#1a5f56)">🗺</div>
+          <div class="tx"><b>寻诗地图</b><span>NFC 感应 · 解锁十一城诗词故事</span></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="entry" onclick="go('p-chat')">
+          <div class="ic" style="background:linear-gradient(140deg,#c07050,#a44b36)">🧑‍🏫</div>
+          <div class="tx"><b>AI 诗话人 · 苏东坡</b><span>对谈江南风物，为你赋诗一首</span></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="entry" onclick="go('p-journal')">
+          <div class="ic" style="background:linear-gradient(140deg,#c9a227,#a3821a)">📜</div>
+          <div class="tx"><b>我的手账</b><span>城市印章与诗句收藏</span></div>
+          <span class="chev">›</span>
+        </div>
+      </div>
+      <div class="scene-strip">
+        <h3>套装设计一览</h3>
+        <div class="strip">
+          <div class="shot" onclick="lightbox('assets/02.png')"><img src="assets/02.png" alt=""><span>卷轴诗词地图</span></div>
+          <div class="shot" onclick="lightbox('assets/03.png')"><img src="assets/03.png" alt=""><span>AI 诗话人交互</span></div>
+          <div class="shot" onclick="lightbox('assets/04.png')"><img src="assets/04.png" alt=""><span>诗词手账</span></div>
+          <div class="shot" onclick="lightbox('assets/05.png')"><img src="assets/05.png" alt=""><span>应用场景</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 寻诗地图 ═══ -->
+  <section class="page scroll" id="p-map">
+    <div class="page-head">
+      <button class="icon-btn" onclick="back()">‹</button>
+      <div><h1>寻诗地图</h1><div class="sub">将手机靠近地图感应点，解锁城市诗话</div></div>
+    </div>
+    <div class="city-hero" onclick="lightbox('assets/02.png')"><img src="assets/02.png" alt=""><span>手绘浙江 · 十一城诗词地图</span></div>
+    <div class="city-list" id="cityList"></div>
+  </section>
+
+  <!-- ═══ AI 诗话人 ═══ -->
+  <section class="page" id="p-chat">
+    <div class="chat-head">
+      <button class="icon-btn" onclick="back()">‹</button>
+      <div class="av"><img src="assets/03.png" alt="苏东坡"></div>
+      <div class="nm"><b class="serif">苏东坡 · AI 诗话人</b><span><i></i>泛舟西湖中 · 点击下方话题对谈</span></div>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chips" id="chatChips"></div>
+  </section>
+
+  <!-- ═══ 我的手账 ═══ -->
+  <section class="page scroll" id="p-journal">
+    <div class="page-head">
+      <button class="icon-btn" onclick="back()">‹</button>
+      <div><h1>我的手账</h1><div class="sub" id="journalSub">收集印章与诗句，集齐三城可生成寻诗手账</div></div>
+    </div>
+    <div class="journal-hero"><img src="assets/04.png" alt=""><span class="serif">寻 诗 手 账</span></div>
+    <div class="stamp-grid" id="stampGrid"></div>
+    <div style="padding:0 16px 30px"><button class="btn" id="shareBtn" onclick="finish()">生成我的寻诗手账</button></div>
+  </section>
+</div>
+
+<!-- NFC 扫描浮层 -->
+<div class="scan-mask" id="scanMask">
+  <div class="nfc-stage"><i></i><i></i><i></i><div class="core">NFC</div></div>
+  <div class="scan-t" id="scanT">正在感应…</div>
+  <div class="scan-d" id="scanD">请将手机贴近地图上的城市感应点</div>
+</div>
+
+<!-- 感应结果 -->
+<div class="result-sheet" id="resultSheet">
+  <button class="rs-close" onclick="closeResult()">✕</button>
+  <div class="rs-city" id="rsCity">杭州 · 西湖</div>
+  <div class="rs-title serif" id="rsTitle">饮湖上初晴后雨</div>
+  <div class="poem-card">
+    <div class="pt">诗 话</div>
+    <p class="serif" id="rsPoem">水光潋滟晴方好<br>山色空蒙雨亦奇</p>
+    <div class="au" id="rsAu">宋 · 苏轼</div>
+    <div class="stamp" id="rsStamp">已<br>游</div>
+  </div>
+  <button class="btn" onclick="collectCity()">收入手账</button>
+</div>
+
+<!-- 赋诗结果 -->
+<div class="poem-modal" id="poemModal">
+  <div class="pm-card">
+    <h3>东 坡 赠 诗</h3>
+    <div class="verses serif" id="pmVerses">湖光潋滟入新晴<br>烟雨楼台次第明<br>若把杭州比西子<br>与君同泛一舟轻</div>
+    <div class="vs-note">—— 依你所选风物即兴而作，收入手账</div>
+    <button class="btn" onclick="collectPoem()">收入手账</button>
+    <button class="btn ghost" onclick="closePoem()">再改改话题</button>
+  </div>
+</div>
+
+<!-- 灯箱 -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('show')">
+  <img id="lbImg" src="" alt="">
+  <button>点按任意处关闭</button>
+</div>
+
+<div class="toast" id="toast"></div>
+</div></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+/* ── 页面导航 ── */
+let stack=['p-home'];
+function go(id){
+  if(id===stack[stack.length-1])return;
+  const from=$(stack[stack.length-1]),to=$(id);
+  stack.push(id);
+  to.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>from.classList.add('stay-left')));
+  setTimeout(()=>from.classList.remove('active','stay-left'),500);
+  $('sbar').classList.toggle('on-dark',id==='p-home');
+}
+function back(){
+  if(stack.length<2)return;
+  const from=$(stack[stack.length-1]),to=$(stack[stack.length-2]);
+  stack.pop();
+  to.classList.add('active','stay-left');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    to.classList.remove('stay-left');
+    from.classList.add('go-right');
+  }));
+  setTimeout(()=>{from.classList.remove('active','go-right')},500);
+  $('sbar').classList.toggle('on-dark',stack[stack.length-1]==='p-home');
+}
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000)}
+function lightbox(src){$('lbImg').src=src;$('lightbox').classList.add('show')}
+
+/* ── 城市数据 ── */
+const cities=[
+  {id:'hz',name:'杭州 · 西湖',poemTitle:'饮湖上初晴后雨',poem:'水光潋滟晴方好<br>山色空蒙雨亦奇',author:'宋 · 苏轼',seal:'杭',hint:'湖山烟雨之地',detail:'苏轼任杭州通判时泛舟湖上，晴雨皆成诗。'},
+  {id:'sx',name:'绍兴 · 兰亭',poemTitle:'兰亭集序（节选）',poem:'仰观宇宙之大<br>俯察品类之盛',author:'东晋 · 王羲之',seal:'越',hint:'曲水流觞之地',detail:'永和九年，王羲之与群贤修禊于会稽山阴之兰亭。'},
+  {id:'wz',name:'温州 · 江心屿',poemTitle:'登江中孤屿',poem:'云日相辉映<br>空水共澄鲜',author:'南朝 · 谢灵运',seal:'瓯',hint:'中国诗之岛',detail:'谢灵运任永嘉太守，遍游温州山水，开山水诗一脉。'}
+];
+const state={unlocked:{},poem:null};
+const confettiColors=['#1a5f56','#b35c48','#c9a227','#2c7a6e','#e8dcc0'];
+
+function renderCities(){
+  $('cityList').innerHTML=cities.map(c=>{
+    const done=state.unlocked[c.id];
+    return `<div class="city ${done?'done':''}" onclick="tapCity('${c.id}')">
+      <div class="seal-mini serif">${done?'已游':c.seal}</div>
+      <div class="tx"><b>${c.name}</b><span>${c.hint} · ${c.detail.slice(0,15)}…</span></div>
+      <div class="st">${done?'✓ 已收入手账':'轻触感应'}</div>
+    </div>`}).join('');
+}
+function renderStamps(){
+  $('stampGrid').innerHTML=cities.map(c=>{
+    const done=!!state.unlocked[c.id];
+    return `<div class="stamp-cell ${done?'':'locked'}">
+      ${done?'<div class="mini-seal">诗</div>':''}
+      <div class="big serif">${c.seal}</div><b>${c.name.split(' · ')[0]}</b><span>${done?c.poemTitle:'尚未解锁'}</span>
+    </div>`}).join('')
+    +`<div class="stamp-cell ${state.poem?'':'locked'}">
+      ${state.poem?'<div class="mini-seal">赠</div>':''}
+      <div class="big serif" style="background:linear-gradient(140deg,#c07050,#a44b36)">诗</div><b>东坡赠诗</b><span>${state.poem?'专属生成':'完成对话解锁'}</span>
+    </div>`;
+  const n=Object.keys(state.unlocked).length;
+  $('jpnum').textContent=n+'/3';
+  $('jpbar').style.strokeDashoffset=138.2*(1-n/3);
+  $('jpd').textContent=n===0?'轻触地图感应点，解锁城市诗话':n<3?`已解锁 ${n} 城，继续靠近下一个感应点`:'三城诗话集齐，可生成寻诗手账 ✦';
+  $('journalSub').textContent=`已收集 ${n} 枚城市印章${state.poem?' + 1 首赠诗':''}`;
+  $('shareBtn').textContent=n===3?'生成我的寻诗手账':`还需 ${3-n} 枚印章（先去寻诗地图）`;
+}
+function tapCity(id){
+  const c=cities.find(x=>x.id===id);
+  $('scanT').textContent='正在感应…';
+  $('scanD').textContent=`请将手机贴近「${c.name.split(' · ')[0]}」感应点`;
+  $('scanMask').classList.add('show');
+  setTimeout(()=>{$('scanT').textContent='感应成功';},1300);
+  setTimeout(()=>{
+    $('scanMask').classList.remove('show');
+    $('rsCity').textContent=c.name;
+    $('rsTitle').textContent=c.poemTitle;
+    $('rsPoem').innerHTML=c.poem;
+    $('rsAu').textContent=c.author;
+    const st=$('rsStamp');st.classList.remove('on');void st.offsetWidth;
+    $('resultSheet').classList.add('show');
+    setTimeout(()=>st.classList.add('on'),350);
+  },2200);
+}
+function closeResult(){$('resultSheet').classList.remove('show')}
+function collectCity(){
+  const cur=$('rsCity').textContent;
+  const c=cities.find(x=>x.name===cur);
+  if(c&&!state.unlocked[c.id]){state.unlocked[c.id]=true;toast('已收入手账 ✓');}
+  closeResult();renderCities();renderStamps();
+  if(Object.keys(state.unlocked).length===3)confetti();
+}
+
+/* ── 聊天 ── */
+const chatFlow=[
+  {ai:'客官来啦！某是苏子瞻，刚从西湖泛舟归来。<br>今日想聊聊江南何处风物？',
+   chips:['西湖的雨','钱塘的潮','说说你自己']},
+  {replies:{
+    '西湖的雨':'湖上初晴后雨，最是奇妙。水光潋滟时，舟行镜中；烟雨迷蒙时，山色如画。<br>东坡尝言：「若把西湖比西子，淡妆浓抹总相宜。」',
+    '钱塘的潮':'八月十八潮，壮观天下无！万面鼓声中，白浪如山而来。<br>观潮当登六和塔，江海之气势，尽收眼底。',
+    '说说你自己':'某乃眉州眉山人，两度宦游浙江。杭州疏浚西湖、筑苏堤，绍兴访兰亭旧迹。<br>江南风物，是某平生诗料最多处。'},
+   chips:['还有呢','换个别处','听你吟诗']},
+  {replies:{
+    '还有呢':'西湖十景之外，孤山探梅、虎跑试泉、龙井问茶，皆是诗境。<br>若逢烟雨，则满城皆入诗行。',
+    '换个别处':'绍兴兰亭，曲水流觞，右军一序冠绝古今；温州江心屿，谢公「云日相辉映，空水共澄鲜」，诗之岛也。',
+    '听你吟诗':'哈哈，口占无妨。不过——不如由某为你量身赋诗一首？'},
+   chips:['好啊，为我赋诗','再聊聊']},
+  {replies:{
+    '再聊聊':'江南处处是诗：山寺月中寻桂子，郡亭枕上看潮头。<br>何时与君同游？'},
+   chips:['好啊，为我赋诗']},
+  {ai:'如此，请看——',final:true}
+];
+let step=0,asked=0;
+function renderChips(list){
+  $('chatChips').innerHTML=list.map(c=>`<button class="chip" onclick="pick(this,'${c}')">${c}</button>`).join('');
+}
+function typeMsg(html,cb){
+  const body=$('chatBody');
+  const m=document.createElement('div');m.className='msg ai';body.appendChild(m);
+  let i=0,plain=html;
+  m.innerHTML='';
+  const tmp=document.createElement('div');
+  (function type(){
+    if(i<plain.length){
+      tmp.innerHTML=plain.slice(0,++i);
+      m.innerHTML=tmp.innerHTML+(i<plain.length?'<span style="opacity:.4">▍</span>':'');
+      body.scrollTop=body.scrollHeight;
+      setTimeout(type,26);
+    }else{m.innerHTML=plain;body.scrollTop=body.scrollHeight;cb&&cb()}
+  })();
+}
+function typing(cb){
+  const body=$('chatBody');
+  const t=document.createElement('div');t.className='msg ai typing-dots';t.innerHTML='<b></b><b></b><b></b>';
+  body.appendChild(t);body.scrollTop=body.scrollHeight;
+  setTimeout(()=>{t.remove();cb()},850);
+}
+function pick(btn,q){
+  document.querySelectorAll('.chip').forEach(c=>c.disabled=true);
+  btn.style.background='var(--brand)';btn.style.color='#fff';
+  const me=document.createElement('div');me.className='msg me';me.textContent=q;
+  $('chatBody').appendChild(me);$('chatBody').scrollTop=1e9;
+  asked++;
+  const node=chatFlow[Math.min(step,chatFlow.length-1)];
+  const reply=node.replies?node.replies[q]||Object.values(node.replies)[0]:null;
+  typing(()=>{
+    if(node.final||(reply&&asked>=2&&q==='好啊，为我赋诗')){
+      typeMsg('如此，请看——',()=>{genPoem()});
+      renderChips([]);
+    }else{
+      typeMsg(reply||node.ai,()=>{
+        step=Math.min(step+1,chatFlow.length-1);
+        renderChips(chatFlow[step].chips||[]);
+      });
+    }
+  });
+}
+function genPoem(){
+  setTimeout(()=>{
+    const topics=[...document.querySelectorAll('.msg.me')].map(m=>m.textContent);
+    const hasRain=topics.some(t=>t.includes('雨'));
+    const poems=[
+      '湖光潋滟入新晴<br>烟雨楼台次第明<br>若把杭州比西子<br>与君同泛一舟轻',
+      '一夜春雨过断桥<br>山色空蒙翠欲滴<br>江南自古诗中画<br>与君相遇即佳句'
+    ];
+    $('pmVerses').innerHTML=poems[hasRain?1:0];
+    $('poemModal').classList.add('show');
+  },700);
+}
+function collectPoem(){
+  state.poem=$('pmVerses').innerHTML;
+  $('poemModal').classList.remove('show');
+  toast('赠诗已收入手账 ✓');
+  renderStamps();confetti();
+}
+function closePoem(){$('poemModal').classList.remove('show')}
+
+/* ── 手账完成 ── */
+function finish(){
+  const n=Object.keys(state.unlocked).length;
+  if(n<3){toast(`还差 ${3-n} 枚城市印章，先去寻诗地图感应`);go('p-map');return}
+  toast('寻诗手账已生成，可分享同好 ✦');confetti();
+}
+function confetti(){
+  const c=document.createElement('div');c.className='confetti';
+  for(let i=0;i<26;i++){
+    const p=document.createElement('i');
+    p.style.left=Math.random()*100+'%';
+    p.style.background=confettiColors[i%5];
+    p.style.animationDuration=(1.6+Math.random()*1.4)+'s';
+    p.style.animationDelay=Math.random()*.5+'s';
+    p.style.transform=`rotate(${Math.random()*360}deg)`;
+    c.appendChild(p);
+  }
+  $('screen').appendChild(c);setTimeout(()=>c.remove(),3400);
+}
+
+/* ── 初始化 ── */
+renderCities();renderStamps();
+typing(()=>typeMsg(chatFlow[0].ai,()=>renderChips(chatFlow[0].chips)));
+</script>
+</body>
+</html>

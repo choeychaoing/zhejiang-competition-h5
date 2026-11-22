@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>补书 · 寻纸 | AI 古籍修复体验</title>
+<style>
+:root{
+  --brand:#2b4a7d;--brand-l:#3d639c;--accent:#a4462f;--wood:#8a6a4f;
+  --paper:#f5f1e6;--card:#fffdf7;--ink:#2b2822;--ink2:#6d675b;
+  --line:rgba(43,74,125,.14);--shadow:0 14px 34px rgba(43,74,125,.15);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;background:#d8d4c8;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);overflow:hidden}
+.serif{font-family:"Songti SC",STSong,"SimSun",serif}
+.desktop{display:grid;place-items:center;min-height:100%;padding:18px}
+.phone{position:relative;width:100%;max-width:402px;height:min(860px,94vh);background:#141821;border-radius:48px;padding:13px;box-shadow:0 30px 70px rgba(0,0,0,.4)}
+.screen{position:relative;width:100%;height:100%;background:var(--paper);border-radius:36px;overflow:hidden;display:flex;flex-direction:column}
+@media (max-width:480px){.desktop{padding:0}.phone{max-width:none;height:100vh;border-radius:0;padding:0;box-shadow:none}.screen{border-radius:0}}
+
+.statusbar{flex:none;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px;font-weight:700;color:var(--ink);z-index:5;transition:color .3s}
+.statusbar.on-dark{color:#fff}
+
+.pages{position:relative;flex:1;overflow:hidden}
+.page{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);visibility:hidden;transform:translateX(100%);transition:transform .46s cubic-bezier(.22,.9,.32,1),visibility .46s;z-index:1}
+.page.active{visibility:visible;transform:translateX(0);z-index:2}
+.page.stay-left{transform:translateX(-22%) scale(.97)!important}
+.page.go-right{transform:translateX(100%)!important}
+.page.scroll{overflow-y:auto;overscroll-behavior:contain}
+.page-head{flex:none;display:flex;align-items:center;gap:12px;padding:8px 16px 12px}
+.icon-btn{width:36px;height:36px;border-radius:12px;border:none;background:rgba(43,74,125,.08);color:var(--brand);font-size:17px;cursor:pointer;display:grid;place-items:center;transition:transform .15s}
+.icon-btn:active{transform:scale(.9)}
+.page-head h1{font-size:18px;font-weight:800}
+.page-head .sub{font-size:11px;color:var(--ink2);font-weight:500}
+
+.hero{position:relative;flex:none;height:46%;border-radius:0 0 30px 30px;overflow:hidden;background:#1c2a3d}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 35%;animation:kenburns 18s ease-in-out infinite alternate}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.09)}}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),transparent 32%,transparent 52%,rgba(20,30,45,.88))}
+.hero .hero-txt{position:absolute;left:22px;right:22px;bottom:18px;color:#fff}
+.hero .kicker{display:inline-block;padding:4px 11px;border:1px solid rgba(255,255,255,.5);border-radius:999px;font-size:11px;letter-spacing:.22em;margin-bottom:10px;backdrop-filter:blur(3px)}
+.hero h2{font-size:30px;letter-spacing:.16em;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.hero p{margin-top:6px;font-size:12.5px;opacity:.85;letter-spacing:.04em}
+.hero .zoom-hint{position:absolute;top:12px;right:14px;padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;font-size:11px;backdrop-filter:blur(4px);cursor:pointer}
+.home-body{flex:1;overflow-y:auto;padding:18px 18px 26px}
+.book-progress{display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(120deg,var(--card),#efe9d8);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.bp-icon{width:52px;height:52px;flex:none;border-radius:14px;background:linear-gradient(140deg,var(--brand-l),var(--brand));color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:0 8px 18px rgba(43,74,125,.3)}
+.book-progress .t{font-size:13px;font-weight:800}
+.book-progress .d{font-size:11.5px;color:var(--ink2);margin-top:3px}
+.bar{height:7px;border-radius:99px;background:#e2dbc9;margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand-l),var(--brand));width:0%;transition:width .8s cubic-bezier(.22,.9,.32,1)}
+.entries{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.entry{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .18s}
+.entry:active{transform:scale(.975)}
+.entry .ic{width:48px;height:48px;flex:none;border-radius:15px;display:grid;place-items:center;font-size:23px;color:#fff}
+.entry .tx{flex:1;min-width:0}
+.entry .tx b{display:block;font-size:15px}
+.entry .tx span{display:block;font-size:11.5px;color:var(--ink2);margin-top:3px}
+.entry .chev{color:#c6bda9;font-size:18px;flex:none}
+.scene-strip{margin-top:20px}
+.scene-strip h3{font-size:13px;color:var(--ink2);margin-bottom:10px;letter-spacing:.1em}
+.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.strip::-webkit-scrollbar{display:none}
+.strip .shot{flex:none;width:126px;height:160px;border-radius:16px;overflow:hidden;scroll-snap-align:start;cursor:pointer;position:relative;box-shadow:var(--shadow)}
+.strip .shot img{width:100%;height:100%;object-fit:cover}
+.strip .shot span{position:absolute;left:0;right:0;bottom:0;padding:16px 8px 7px;font-size:11px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.62))}
+
+/* ── 识纸页 ── */
+.scan-zone{margin:2px 16px;padding:26px 16px 22px;border:1.5px dashed rgba(43,74,125,.35);border-radius:22px;text-align:center;background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(43,74,125,.03) 14px 28px)}
+.scan-zone .nfc-stage{position:relative;width:130px;height:130px;margin:0 auto 14px;display:grid;place-items:center}
+.scan-zone .core{width:62px;height:62px;border-radius:50%;background:linear-gradient(140deg,var(--brand-l),var(--brand));color:#fff;display:grid;place-items:center;font-weight:900;font-size:13px;z-index:2;box-shadow:0 0 34px rgba(43,74,125,.45)}
+.scan-zone i{position:absolute;width:62px;height:62px;border-radius:50%;border:1.5px solid rgba(43,74,125,.45);animation:ripple 1.7s ease-out infinite}
+.scan-zone i:nth-child(2){animation-delay:.55s}
+.scan-zone i:nth-child(3){animation-delay:1.1s}
+@keyframes ripple{to{width:170px;height:170px;opacity:0}}
+.scan-zone p{font-size:12.5px;color:var(--ink2);margin-bottom:14px}
+.btn{display:inline-block;width:100%;padding:15px;border:none;border-radius:16px;background:linear-gradient(120deg,var(--brand),var(--brand-l));color:#fff;font-size:15.5px;font-weight:800;letter-spacing:.08em;cursor:pointer;box-shadow:0 10px 24px rgba(43,74,125,.32);transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:#fff;color:var(--brand);border:1.5px solid rgba(43,74,125,.3);box-shadow:none}
+/* 3D 翻卡 */
+.paper-card-wrap{margin:18px 16px 0;perspective:1200px}
+.paper-card{position:relative;width:100%;height:330px;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,.9,.3,1);cursor:pointer}
+.paper-card.flip{transform:rotateY(180deg)}
+.pc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
+.pc-face.front img{width:100%;height:100%;object-fit:cover}
+.pc-face.front .tag{position:absolute;top:12px;left:12px;padding:5px 12px;border-radius:999px;background:rgba(20,30,45,.55);color:#fff;font-size:11px;backdrop-filter:blur(4px)}
+.pc-face.front .flip-hint{position:absolute;right:12px;bottom:12px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.85);font-size:11px;color:var(--brand);font-weight:700}
+.pc-face.back{transform:rotateY(180deg);background:var(--card);border:1px solid var(--line);padding:22px;display:flex;flex-direction:column}
+.pc-face.back h3{font-size:19px;margin-bottom:4px}
+.pc-face.back .dyn{font-size:11px;color:var(--accent);letter-spacing:.2em;margin-bottom:12px}
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.spec div{background:#f2eddd;border-radius:12px;padding:9px 11px}
+.spec b{display:block;font-size:10.5px;color:var(--ink2);font-weight:500}
+.spec span{font-size:13px;font-weight:700}
+.pc-face.back p{font-size:12px;line-height:1.8;color:var(--ink2);flex:1}
+
+/* ── 聊天 ── */
+.chat-head{flex:none;display:flex;align-items:center;gap:12px;padding:10px 16px 12px;border-bottom:1px solid var(--line);background:#fffdf8}
+.chat-head .av{width:42px;height:42px;border-radius:50%;overflow:hidden;border:2px solid var(--wood);flex:none}
+.chat-head .av img{width:100%;height:100%;object-fit:cover}
+.chat-head .nm{flex:1}
+.chat-head .nm b{font-size:15px}
+.chat-head .nm span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--brand);margin-top:2px}
+.chat-head .nm i{width:6px;height:6px;border-radius:50%;background:#3fae7a;animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.3}}
+.chat-body{flex:1;overflow-y:auto;padding:18px 16px 8px;display:flex;flex-direction:column;gap:14px;background:linear-gradient(180deg,#f5f1e6,#efeadd)}
+.msg{max-width:80%;padding:11px 14px;border-radius:18px;font-size:14.5px;line-height:1.75;animation:msgIn .35s cubic-bezier(.2,1.2,.4,1)}
+@keyframes msgIn{from{opacity:0;transform:translateY(12px) scale(.96)}}
+.msg.ai{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.me{align-self:flex-end;background:linear-gradient(120deg,var(--brand),var(--brand-l));color:#fff;border-bottom-right-radius:6px;box-shadow:0 6px 16px rgba(43,74,125,.25)}
+.msg.ai.typing-dots{display:flex;gap:5px;padding:15px 16px}
+.msg.ai.typing-dots b{width:7px;height:7px;border-radius:50%;background:#a89f8b;animation:bnc 1.1s infinite}
+.msg.ai.typing-dots b:nth-child(2){animation-delay:.18s}
+.msg.ai.typing-dots b:nth-child(3){animation-delay:.36s}
+@keyframes bnc{30%{transform:translateY(-6px)}}
+.chips{flex:none;display:flex;gap:9px;padding:10px 14px;overflow-x:auto;background:#fffdf8;border-top:1px solid var(--line)}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:9px 15px;border-radius:999px;border:1.5px solid rgba(43,74,125,.3);background:#fff;color:var(--brand);font-size:13px;cursor:pointer;transition:.2s}
+.chip:active{background:var(--brand);color:#fff}
+.chip:disabled{opacity:.35}
+
+/* ── 修复台 ── */
+.repair-hero{margin:2px 16px;height:170px;border-radius:20px;overflow:hidden;position:relative;box-shadow:var(--shadow)}
+.repair-hero img{width:100%;height:100%;object-fit:cover}
+.repair-hero .dm{position:absolute;inset:0;background:rgba(20,30,45,.35);display:grid;place-items:center;color:#fff;font-size:19px;letter-spacing:.28em;font-weight:700}
+.steps{padding:16px 16px 10px;display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:13px;padding:14px 15px;background:var(--card);border:1px solid var(--line);border-radius:16px;opacity:.55;transition:.4s}
+.step.on{opacity:1;border-color:rgba(43,74,125,.3)}
+.step.done{opacity:1;background:#f0f4ec;border-color:rgba(63,174,122,.4)}
+.step .no{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;background:#e5dfcd;color:#8f887a;transition:.4s}
+.step.on .no{background:var(--brand);color:#fff;box-shadow:0 0 0 5px rgba(43,74,125,.15)}
+.step.done .no{background:#3fae7a;color:#fff}
+.step .tx b{display:block;font-size:14px}
+.step .tx span{display:block;font-size:11.5px;color:var(--ink2);margin-top:3px;line-height:1.6}
+.step .spin{margin-left:auto;width:18px;height:18px;flex:none;border-radius:50%;border:2.5px solid rgba(43,74,125,.15);border-top-color:var(--brand);animation:rot .8s linear infinite;align-self:center;display:none}
+.step.on .spin{display:block}
+.step.done .spin{display:none}
+.step.done .ck{margin-left:auto;align-self:center;color:#3fae7a;font-weight:900;font-size:17px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.repair-foot{padding:8px 16px 26px}
+.repair-meter{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.repair-meter .pct{font-size:24px;font-weight:900;color:var(--brand);width:64px}
+.repair-meter .bar{flex:1}
+
+/* ── 证书 ── */
+.cert-wrap{padding:16px 18px 30px}
+.cert{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 20px;text-align:center;box-shadow:var(--shadow);overflow:hidden}
+.cert::before{content:"";position:absolute;inset:8px;border:1.5px solid rgba(164,70,47,.3);border-radius:14px;pointer-events:none}
+.cert .ct{font-size:11px;letter-spacing:.4em;color:var(--accent);margin-bottom:8px}
+.cert h2{font-size:24px;margin-bottom:4px}
+.cert .cd{font-size:11.5px;color:var(--ink2);margin-bottom:16px}
+.cert .cbody{font-size:13.5px;line-height:2.1;color:var(--ink)}
+.cert .cno{font-size:10.5px;color:#b3ab98;margin-top:14px}
+.stamp{position:absolute;right:14px;bottom:14px;width:70px;height:70px;border:2.5px solid var(--accent);border-radius:50%;color:var(--accent);display:grid;place-items:center;font-size:13px;font-weight:900;line-height:1.3;text-align:center;transform:rotate(-12deg);opacity:0}
+.stamp.on{animation:stampIn .5s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes stampIn{0%{transform:scale(2.6) rotate(-30deg);opacity:0}55%{transform:scale(.92) rotate(-12deg);opacity:1}100%{transform:scale(1) rotate(-12deg);opacity:.92}}
+
+.scan-mask{position:absolute;inset:0;z-index:40;background:rgba(14,20,32,.82);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;color:#fff}
+.scan-mask.show{display:flex}
+.nfc-big{position:relative;width:170px;height:170px;display:grid;place-items:center}
+.nfc-big .core{width:74px;height:74px;border-radius:50%;background:#fff;color:var(--brand);display:grid;place-items:center;font-weight:900;font-size:15px;z-index:2;box-shadow:0 0 40px rgba(255,255,255,.5)}
+.nfc-big i{position:absolute;width:74px;height:74px;border-radius:50%;border:1.5px solid rgba(255,255,255,.65);animation:ripple 1.7s ease-out infinite}
+.nfc-big i:nth-child(2){animation-delay:.55s}
+.nfc-big i:nth-child(3){animation-delay:1.1s}
+.scan-t{font-size:15px;letter-spacing:.2em;animation:blink 1.2s infinite}
+.scan-d{font-size:11.5px;opacity:.6}
+
+.lightbox{position:absolute;inset:0;z-index:70;background:rgba(8,12,20,.94);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.lightbox.show{display:flex}
+.lightbox img{width:92%;max-height:82%;object-fit:contain;border-radius:14px}
+.lightbox button{padding:9px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font-size:13px;cursor:pointer}
+.toast{position:absolute;left:50%;bottom:88px;transform:translate(-50%,20px);z-index:80;padding:11px 20px;border-radius:999px;background:rgba(22,30,44,.9);color:#fff;font-size:13px;opacity:0;transition:.35s;pointer-events:none;max-width:82%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.confetti{position:absolute;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-14px;width:8px;height:13px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="desktop"><div class="phone"><div class="screen" id="screen">
+
+<div class="statusbar on-dark" id="sbar"><span>9:41</span><span>◈⁙⁛</span></div>
+
+<div class="pages">
+
+  <!-- 首页 -->
+  <section class="page active" id="p-home">
+    <div class="hero">
+      <img src="assets/01.png" alt="补书寻纸主视觉">
+      <div class="veil"></div>
+      <span class="zoom-hint" onclick="lightbox('assets/01.png')">查看整套设计 ⊞</span>
+      <div class="hero-txt serif">
+        <span class="kicker">AI 古籍修复文创礼盒</span>
+        <h2>补书 · 寻纸</h2>
+        <p>识纸 · 修复 · 藏书，一次安静的手艺之旅</p>
+      </div>
+    </div>
+    <div class="home-body">
+      <div class="book-progress">
+        <div class="bp-icon">📕</div>
+        <div style="flex:1">
+          <div class="t" id="bpT">残卷修复进度</div>
+          <div class="d" id="bpD">尚未开始 · 前往修复台开启第一次补书</div>
+          <div class="bar"><i id="bpBar"></i></div>
+        </div>
+        <span id="bpPct" style="font-size:18px;font-weight:900;color:var(--brand)">0%</span>
+      </div>
+      <div class="entries">
+        <div class="entry" onclick="go('p-scan')">
+          <div class="ic" style="background:linear-gradient(140deg,#3d639c,#2b4a7d)">🏷</div>
+          <div class="tx"><b>识纸 · 寻纸</b><span>NFC 感应纸样卡，翻转查看纸性档案</span></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="entry" onclick="go('p-chat')">
+          <div class="ic" style="background:linear-gradient(140deg,#a05c3e,#8a6a4f)">🧑‍🔧</div>
+          <div class="tx"><b>AI 修复师</b><span>对话答疑，学习古籍修复知识</span></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="entry" onclick="go('p-repair')">
+          <div class="ic" style="background:linear-gradient(140deg,#5b7a53,#43613c)">🩹</div>
+          <div class="tx"><b>修复台</b><span>四步修复残卷，亲历补书全过程</span></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="entry" onclick="go('p-cert')">
+          <div class="ic" style="background:linear-gradient(140deg,#a4462f,#7e3321)">🎓</div>
+          <div class="tx"><b>补书证书</b><span>完成修复，领取你的藏书印</span></div>
+          <span class="chev">›</span>
+        </div>
+      </div>
+      <div class="scene-strip">
+        <h3>礼盒设计一览</h3>
+        <div class="strip">
+          <div class="shot" onclick="lightbox('assets/02.png')"><img src="assets/02.png" alt=""><span>十七种纸样</span></div>
+          <div class="shot" onclick="lightbox('assets/03.png')"><img src="assets/03.png" alt=""><span>AI 修复师</span></div>
+          <div class="shot" onclick="lightbox('assets/04.png')"><img src="assets/04.png" alt=""><span>修复步骤</span></div>
+          <div class="shot" onclick="lightbox('assets/05.png')"><img src="assets/05.png" alt=""><span>应用场景</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 识纸 -->
+  <section class="page scroll" id="p-scan">
+    <div class="page-head">
+      <button class="icon-btn" onclick="back()">‹</button>
+      <div><h1>识纸 · 寻纸</h1><div class="sub">将手机贴近礼盒中的纸样卡，感应纸性档案</div></div>
+    </div>
+    <div class="scan-zone">
+      <div class="nfc-stage"><i></i><i></i><i></i><div class="core">NFC</div></div>
+      <p>礼盒内置 17 种传统手工纸样卡，逐一感应即可解锁档案</p>
+      <button class="btn" onclick="scanPaper()">感应纸样卡（模拟）</button>
+    </div>
+    <div class="paper-card-wrap" id="pcWrap" style="display:none">
+      <div class="paper-card" id="paperCard" onclick="this.classList.toggle('flip')">
+        <div class="pc-face front">
+          <img src="assets/02.png" alt="纸样卡">
+          <span class="tag" id="pcTag">纸样 03 · 竹纸</span>
+          <span class="flip-hint">点按翻面 ⤺</span>
+        </div>
+        <div class="pc-face back">
+          <h3 class="serif">竹纸 · 毛边</h3>
+          <div class="dyn">M A D E&nbsp;&nbsp;I N&nbsp;&nbsp;江 西 铅 山</div>
+          <div class="spec">
+            <div><b>年代</b><span>明 · 起源</span></div>
+            <div><b>原料</b><span>毛竹纤维</span></div>
+            <div><b>帘纹</b><span>二指宽</span></div>
+            <div><b>纸性</b><span>柔韧微黄</span></div>
+          </div>
+          <p>竹纸取嫩竹沤制而成，色微黄，帘纹明显，是明清古籍印书最常用的纸。修复配纸时，讲究「帘纹相合、厚薄相近、色度略浅」，宁浅勿深，补处方能随年月自然融合。</p>
+        </div>
+      </div>
+      <button class="btn ghost" style="margin-top:14px" onclick="nextPaper()">感应下一张纸样 ›</button>
+    </div>
+    <div style="height:30px"></div>
+  </section>
+
+  <!-- AI 修复师 -->
+  <section class="page" id="p-chat">
+    <div class="chat-head">
+      <button class="icon-btn" onclick="back()">‹</button>
+      <div class="av"><img src="assets/03.png" alt="AI修复师"></div>
+      <div class="nm"><b class="serif">沈师傅 · AI 修复师</b><span><i></i>修复台前 · 三十年手艺</span></div>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chips" id="chatChips"></div>
+  </section>
+
+  <!-- 修复台 -->
+  <section class="page scroll" id="p-repair">
+    <div class="page-head">
+      <button class="icon-btn" onclick="back()">‹</button>
+      <div><h1>修复台</h1><div class="sub">一册虫蛀残卷 · 四步补书</div></div>
+    </div>
+    <div class="repair-hero"><img src="assets/04.png" alt="修复步骤"><div class="dm">残 卷 补 书</div></div>
+    <div class="steps" id="steps"></div>
+    <div class="repair-foot">
+      <div class="repair-meter">
+        <span class="pct" id="rpPct">0%</span>
+        <div class="bar"><i id="rpBar"></i></div>
+      </div>
+      <button class="btn" id="rpBtn" onclick="startRepair()">开始修复</button>
+    </div>
+  </section>
+
+  <!-- 证书 -->
+  <section class="page scroll" id="p-cert">
+    <div class="page-head">
+      <button class="icon-btn" onclick="back()">‹</button>
+      <div><h1>补书证书</h1><div class="sub">完成修复后，加盖藏书印</div></div>
+    </div>
+    <div class="cert-wrap">
+      <div class="cert">
+        <div class="ct">CERTIFICATE · 补 书 证 书</div>
+        <h2 class="serif">补书人证明</h2>
+        <div class="cd">AI 古籍修复文创礼盒 · 体验之证</div>
+        <div class="cbody">
+          兹证明 <b id="certName">持盒者</b> 于体验中<br>
+          完成识纸、配纸、补洞、托裱四道工序<br>
+        </div>
+        <div class="cno">编号 BS-2026-ZJ · 补书寻纸</div>
+        <div class="stamp" id="certStamp">藏书<br>之印</div>
+      </div>
+      <button class="btn" style="margin-top:18px" id="certBtn" onclick="stampCert()">加盖藏书印 🔴</button>
+    </div>
+  </section>
+</div>
+
+<div class="scan-mask" id="scanMask">
+  <div class="nfc-big"><i></i><i></i><i></i><div class="core">NFC</div></div>
+  <div class="scan-t" id="scanT">正在感应…</div>
+  <div class="scan-d" id="scanD">请将手机贴近纸样卡</div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('show')">
+  <img id="lbImg" src="" alt=""><button>点按任意处关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+</div></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let stack=['p-home'];
+function go(id){
+  if(id===stack[stack.length-1])return;
+  const from=$(stack[stack.length-1]),to=$(id);
+  stack.push(id);to.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>from.classList.add('stay-left')));
+  setTimeout(()=>from.classList.remove('active','stay-left'),500);
+  $('sbar').classList.toggle('on-dark',id==='p-home');
+}
+function back(){
+  if(stack.length<2)return;
+  const from=$(stack[stack.length-1]),to=$(stack[stack.length-2]);
+  stack.pop();to.classList.add('active','stay-left');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{to.classList.remove('stay-left');from.classList.add('go-right')}));
+  setTimeout(()=>from.classList.remove('active','go-right'),500);
+  $('sbar').classList.toggle('on-dark',stack[stack.length-1]==='p-home');
+}
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000)}
+function lightbox(src){$('lbImg').src=src;$('lightbox').classList.add('show')}
+const confettiColors=['#2b4a7d','#a4462f','#8a6a4f','#3fae7a','#e8dcc0'];
+function confetti(){
+  const c=document.createElement('div');c.className='confetti';
+  for(let i=0;i<26;i++){const p=document.createElement('i');
+    p.style.left=Math.random()*100+'%';p.style.background=confettiColors[i%5];
+    p.style.animationDuration=(1.6+Math.random()*1.4)+'s';p.style.animationDelay=Math.random()*.5+'s';
+    c.appendChild(p)}
+  $('screen').appendChild(c);setTimeout(()=>c.remove(),3400);
+}
+
+/* ── 识纸 ── */
+const papers=[
+  {name:'竹纸 · 毛边',tag:'纸样 03 · 竹纸',origin:'江 西 铅 山',era:'明 · 起源',mat:'毛竹纤维',pat:'二指宽',prop:'柔韧微黄',desc:'竹纸取嫩竹沤制而成，色微黄，帘纹明显，是明清古籍印书最常用的纸。修复配纸讲究「帘纹相合、厚薄相近、色度略浅」，宁浅勿深，补处方能随年月自然融合。'},
+  {name:'皮纸 · 桑皮',tag:'纸样 07 · 桑皮纸',origin:'浙 江 富 阳',era:'唐 · 起源',mat:'桑树韧皮',pat:'帘纹细密',prop:'绵韧耐久',desc:'桑皮纸纤维细长，纸面绵韧，千年不脆，敦煌遗书多用此纸。修复写经、拓本时首选，托裱书页亦赖其筋骨。'},
+  {name:'宣纸 · 棉料',tag:'纸样 01 · 净皮宣',origin:'安 徽 泾 县',era:'唐 · 起源',mat:'青檀树皮',pat:'云母纹',prop:'润墨绵白',desc:'宣纸「轻似蝉翼白如雪」，韧而能润。棉料宣纸适合补画心与善本书页，补处几乎隐没，是补书配纸中的上品。'}
+];
+let paperIdx=0,scanned=0;
+function scanPaper(){
+  $('scanT').textContent='正在感应…';
+  $('scanD').textContent='请将手机贴近纸样卡';
+  $('scanMask').classList.add('show');
+  setTimeout(()=>{$('scanT').textContent='感应成功'},1300);
+  setTimeout(()=>{
+    $('scanMask').classList.remove('show');
+    $('pcWrap').style.display='block';
+    const pc=$('paperCard');pc.classList.remove('flip');
+    fillPaper(papers[paperIdx%papers.length]);
+    pc.scrollIntoView({behavior:'smooth',block:'center'});
+    scanned++;if(scanned===1)toast('纸样档案已解锁，点卡片翻面 ⤺');
+  },2200);
+}
+function nextPaper(){paperIdx++;scanPaper()}
+function fillPaper(p){
+  $('pcTag').textContent=p.tag;
+  const back=document.querySelector('.pc-face.back');
+  back.querySelector('h3').textContent=p.name;
+  back.querySelector('.dyn').textContent='M A D E&nbsp;&nbsp;I N&nbsp;&nbsp;'+p.origin;
+  const sp=back.querySelectorAll('.spec span');
+  sp[0].textContent=p.era;sp[1].textContent=p.mat;sp[2].textContent=p.pat;sp[3].textContent=p.prop;
+  back.querySelector('p').textContent=p.desc;
+}
+
+/* ── 聊天 ── */
+const flow=[
+  {ai:'你好，我是沈师傅，在修复台前坐了三十年。<br>今天这册虫蛀的残卷，你想从哪儿问起？',
+   chips:['这是什么纸？','虫蛀怎么补？','补书难学吗']},
+  {replies:{
+    '这是什么纸？':'这是清代竹纸，江西铅山所造。你看帘纹二指宽、纸色微黄——补它得配同帘纹、色略浅的竹纸，深了就「补丁」外露了。',
+    '虫蛀怎么补？':'先把虫蛀处清理干净，再用配好的补纸一洞一洞贴上，随后用马蹄刀刮平、锤实。讲究的是「补处不见补」。',
+    '补书难学吗？':'入门不难，难在手上功夫。喷水、揭页、补洞、托裱，每一步都急不得。AI 能帮你识纸配纸，但最后一刮一锤，还得你自己来。'},
+   chips:['纸怎么配？','有什么讲究','带我修复一遍']},
+  {replies:{
+    '纸怎么配？':'配纸三原则：帘纹相合、厚薄相近、色度略浅。可以先用药水比对，宁浅勿深——浅了会随年月返旧，深了永远突兀。',
+    '有什么讲究':'补书如诊病，先望闻问切。望纸色帘纹、闻霉味、问版本年代，再决定怎么治。急不来，一册书个把月很正常。',
+    '带我修复一遍':'好啊，修复台已经备好，四道工序一步一步来。'},
+   chips:['纸怎么配？','有什么讲究','带我修复一遍']},
+];
+let step=0;
+function renderChips(list){$('chatChips').innerHTML=list.map(c=>`<button class="chip" onclick="pick(this,'${c}')">${c}</button>`).join('')}
+function typeMsg(html,cb){
+  const body=$('chatBody');const m=document.createElement('div');m.className='msg ai';body.appendChild(m);
+  const tmp=document.createElement('div');let i=0;
+  (function t(){if(i<html.length){tmp.innerHTML=html.slice(0,++i);m.innerHTML=tmp.innerHTML+(i<html.length?'<span style="opacity:.4">▍</span>':'');body.scrollTop=body.scrollHeight;setTimeout(t,26)}else{m.innerHTML=html;body.scrollTop=body.scrollHeight;cb&&cb()}})();
+}
+function typing(cb){
+  const t=document.createElement('div');t.className='msg ai typing-dots';t.innerHTML='<b></b><b></b><b></b>';
+  $('chatBody').appendChild(t);$('chatBody').scrollTop=1e9;
+  setTimeout(()=>{t.remove();cb()},850);
+}
+function pick(btn,q){
+  document.querySelectorAll('.chip').forEach(c=>c.disabled=true);
+  btn.style.background='var(--brand)';btn.style.color='#fff';
+  const me=document.createElement('div');me.className='msg me';me.textContent=q;
+  $('chatBody').appendChild(me);$('chatBody').scrollTop=1e9;
+  if(q==='带我修复一遍'){
+    typing(()=>typeMsg('好啊，修复台已经备好，四道工序一步一步来。<br><br>👉 我这就带你去',()=>{renderChips([]);setTimeout(()=>go('p-repair'),900)}));
+    return;
+  }
+  const node=flow[Math.min(step,flow.length-1)];
+  typing(()=>{
+    typeMsg(node.replies?q==='纸怎么配？'&&step>=2?node.replies['纸怎么配？']:(node.replies[q]||Object.values(node.replies)[0]):node.ai,()=>{
+      step=Math.min(step+1,flow.length-1);
+      renderChips(flow[step].chips||[]);
+    });
+  });
+}
+
+/* ── 修复台 ── */
+const stepsData=[
+  {t:'清洁去污',d:'软毛刷拂尘，温水淋洗去渍，霉斑以药水点除'},
+  {t:'揭裱分离',d:'起子从书口伸入，慢慢揭开原裱，保持书页完整'},
+  {t:'补纸匹配',d:'依帘纹与厚度选补纸，一洞一纸，浆糊只上薄薄一层'},
+  {t:'托裱重装',d:'整页托裱、砑光、裁齐，按原装帧复原成册'}
+];
+let repairDone=false;
+function renderSteps(){
+  $('steps').innerHTML=stepsData.map((s,i)=>`
+    <div class="step" id="st${i}">
+      <div class="no">${i+1}</div>
+      <div class="tx"><b>${s.t}</b><span>${s.d}</span></div>
+      <div class="spin"></div><div class="ck" style="display:none">✓</div>
+    </div>`).join('');
+}
+function startRepair(){
+  if(repairDone){toast('本册已修复完成，去领证书吧 🎓');return}
+  $('rpBtn').disabled=true;$('rpBtn').textContent='修复中…';
+  stepsData.forEach((s,i)=>{
+    setTimeout(()=>{
+      $('st'+i).classList.add('on');
+      const pct=Math.round((i+0.5)/4*100);
+      $('rpPct').textContent=pct+'%';$('rpBar').style.width=pct+'%';
+    },i*2000);
+    setTimeout(()=>{
+      const el=$('st'+i);el.classList.remove('on');el.classList.add('done');
+      el.querySelector('.ck').style.display='block';
+      const pct=Math.round((i+1)/4*100);
+      $('rpPct').textContent=pct+'%';$('rpBar').style.width=pct+'%';
+      $('bpBar').style.width=pct+'%';$('bpPct').textContent=pct+'%';
+      $('bpD').textContent='残卷修复中 · '+(i+1)+'/4 道工序';
+      if(i===3){
+        repairDone=true;
+        $('rpBtn').disabled=false;$('rpBtn').textContent='修复完成，去领证书 ›';
+        $('rpBtn').onclick=()=>go('p-cert');
+        $('bpD').textContent='修复完成 ✓ 可领取补书证书';
+        toast('残卷修复完成！');confetti();
+      }
+    },i*2000+1600);
+  });
+}
+
+/* ── 证书 ── */
+let certStamped=false;
+function stampCert(){
+  if(!repairDone){toast('先去修复台完成四道工序，才能盖印 🩹');go('p-repair');return}
+  if(certStamped){toast('藏书印已加盖');return}
+  certStamped=true;
+  $('certStamp').classList.add('on');
+  toast('藏书印已加盖 🔴');confetti();
+}
+
+renderSteps();
+typing(()=>typeMsg(flow[0].ai,()=>renderChips(flow[0].chips)));
+</script>
+</body>
+</html>

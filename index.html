@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>出版文创设计大赛 · 三组方案 H5 Demo（v4 App 化版）</title>
+<style>
+:root{--paper:#f4f0e6;--ink:#2b2620;--ink2:#7a7060;--line:rgba(0,0,0,.09)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:var(--paper);font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);padding:34px 20px 60px}
+.wrap{max-width:960px;margin:0 auto}
+header{text-align:center;margin-bottom:34px}
+.kicker{display:inline-block;padding:5px 14px;border:1px solid rgba(0,0,0,.18);border-radius:999px;font-size:11.5px;letter-spacing:.24em;color:var(--ink2)}
+h1{font-family:"Songti SC",STSong,serif;font-size:clamp(26px,4.5vw,38px);margin:14px 0 8px;letter-spacing:.08em}
+header p{font-size:13.5px;color:var(--ink2);line-height:1.8}
+.v4-tag{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:999px;background:linear-gradient(120deg,#1a5f56,#c9a227);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;vertical-align:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;margin-top:26px}
+a.card{display:flex;flex-direction:column;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.08);transition:transform .25s,box-shadow .25s;color:inherit}
+a.card:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(0,0,0,.14)}
+.cover{height:200px;position:relative;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+a.card:hover .cover img{transform:scale(1.06)}
+.cover .no{position:absolute;top:12px;left:12px;padding:4px 12px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff;font-size:11px;letter-spacing:.14em;backdrop-filter:blur(4px)}
+.cover .th{position:absolute;right:12px;bottom:12px;padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.9);font-size:11px;font-weight:700}
+.body{padding:18px 20px 20px}
+.body h2{font-family:"Songti SC",STSong,serif;font-size:20px;margin-bottom:6px}
+.body p{font-size:12.5px;color:var(--ink2);line-height:1.8;margin-bottom:12px}
+.feats{display:flex;flex-wrap:wrap;gap:6px}
+.feats span{padding:4px 10px;border-radius:999px;font-size:11px;background:#f1ece0;color:#6f6455}
+.note{margin-top:34px;padding:16px 20px;border-radius:16px;background:#fff;border:1px dashed rgba(0,0,0,.15);font-size:12.5px;color:var(--ink2);line-height:1.9;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<span class="kicker">出版文创设计大赛 · 小林 & 小孙</span>
+<h1>三组文创方案 H5 体验<span class="v4-tag">v4 · App 化重制</span></h1>
+<p>手机或电脑浏览器直接打开 · 免登录 · 每个方案都是完整可交互的 App 式原型</p>
+</header>
+<div class="grid">
+<a class="card" href="https://choeychaoing.github.io/zhejiang-competition-h5/shihua-zhejiang/">
+<div class="cover"><img src="https://choeychaoing.github.io/zhejiang-competition-h5/shihua-zhejiang//assets/01.png" alt=""><span class="no">方案一</span><span class="th" style="color:#1a5f56">宋韵青绿</span></div>
+<div class="body"><h2>诗话浙江 · 寻诗之旅</h2>
+<p>NFC 感应地图解锁十一城诗话，与 AI 苏东坡对谈风物、生成赠诗，集印章成手账。</p>
+<div class="feats"><span>NFC 感应</span><span>AI 对话</span><span>赋诗生成</span><span>印章手账</span></div></div></a>
+<a class="card" href="https://choeychaoing.github.io/zhejiang-competition-h5/bushu-xunzhi/">
+<div class="cover"><img src="https://choeychaoing.github.io/zhejiang-competition-h5/bushu-xunzhi//assets/01.png" alt=""><span class="no">方案二</span><span class="th" style="color:#2b4a7d">靛蓝宣纸</span></div>
+<div class="body"><h2>补书 · 寻纸</h2>
+<p>NFC 识纸样卡翻看纸性档案，AI 修复师答疑，修复台四道工序补一册残卷，领补书证书。</p>
+<div class="feats"><span>识纸翻卡</span><span>AI 修复师</span><span>四步修复</span><span>藏书印</span></div></div></a>
+<a class="card" href="https://choeychaoing.github.io/zhejiang-competition-h5/guozhi-jiliang/">
+<div class="cover"><img src="https://choeychaoing.github.io/zhejiang-competition-h5/guozhi-jiliang//assets/01.png" alt=""><span class="no">方案三</span><span class="th" style="color:#9e1f2e">红金荣光</span></div>
+<div class="body"><h2>国之脊梁</h2>
+<p>NFC 感应院士对话卡翻看科学人生，与 AI 钱学森畅谈，问答点亮六枚科学精神徽章，生成探索档案。</p>
+<div class="feats"><span>院士卡收集</span><span>AI 钱学森</span><span>徽章问答</span><span>探索档案</span></div></div></a>
+</div>
+<div class="note">⚙️ 全部为纯前端原型：NFC 感应为模拟演示；建议用手机浏览器全屏体验，桌面端会以手机壳形式呈现。<br>旧版对比：v3 展板图版与 v2 纯手绘版链接仍在「设置 - 数据管理 - 我发布的应用」中保留。</div>
+</div>
+</body>
+</html>
